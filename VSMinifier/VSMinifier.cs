@@ -10,13 +10,13 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Yahoo.Yui.Compressor;
 
-namespace Company.VSMinifier
+namespace VSMinifier
 {
 	[Guid( Consts.GUID )]
 	[CustomToolRegistration( "VSMinifier" )]
 	[ProvideObject( typeof( VSMinifier ) )]
 	[ProvideOptionPage( typeof( OptionPage ), "Custom Tools", "VSMinifier", 0, 0, true )]
-	[InstalledProductRegistration( "VSMinifier", "VSMinifier", "1.12", IconResourceID = 4000 )]
+	[InstalledProductRegistration( "VSMinifier", "VSMinifier", "1.13.1", IconResourceID = 4000 )]
 	public sealed class VSMinifier : Package, IVsSingleFileGenerator
 	{
 		private string _InputFilePath = null;

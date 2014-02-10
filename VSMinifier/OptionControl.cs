@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using Microsoft.Ajax.Utilities;
 
-namespace Company.VSMinifier
+namespace VSMinifier
 {
 	public partial class OptionControl : UserControl
 	{

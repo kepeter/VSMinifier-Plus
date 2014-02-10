@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using Microsoft.Ajax.Utilities;
 using Microsoft.VisualStudio.Shell;
 
-namespace Company.VSMinifier
+namespace VSMinifier
 {
 	[ComVisible( true )]
 	public class OptionPage : DialogPage

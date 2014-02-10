@@ -2,7 +2,7 @@
 using System.Web;
 using System;
 
-namespace Company.VSMinifier
+namespace VSMinifier
 {
 	public enum CompilationLevel
 	{

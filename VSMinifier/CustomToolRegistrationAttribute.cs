@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.Shell;
 using VSLangProj80;
 
-namespace Company.VSMinifier
+namespace VSMinifier
 {
 	[AttributeUsage( AttributeTargets.Class, AllowMultiple = false, Inherited = true )]
 	class CustomToolRegistrationAttribute : RegistrationAttribute

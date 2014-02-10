@@ -1,4 +1,4 @@
-﻿namespace Company.VSMinifier
+﻿namespace VSMinifier
 {
 	partial class OptionControl
 	{
