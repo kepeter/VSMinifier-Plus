@@ -67,17 +67,13 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AjaxMin, Version=4.80.4763.16593, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+    <Reference Include="AjaxMin, Version=5.7.5124.21494, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>3rd Party\AjaxMin.dll</HintPath>
+      <HintPath>..\packages\AjaxMin.5.7.5124.21499\lib\net40\AjaxMin.dll</HintPath>
     </Reference>
     <Reference Include="EcmaScript.NET, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>3rd Party\EcmaScript.NET.dll</HintPath>
-    </Reference>
-    <Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>3rd Party\Iesi.Collections.dll</HintPath>
+      <HintPath>..\packages\EcmaScript.Net.1.0.1.0\lib\net20\EcmaScript.NET.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
@@ -105,9 +101,9 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <HintPath>..\..\..\..\Program Files\Microsoft Visual Studio 10.0\Common7\IDE\PublicAssemblies\VSLangProj80.dll</HintPath>
     </Reference>
-    <Reference Include="Yahoo.Yui.Compressor, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Yahoo.Yui.Compressor, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>3rd Party\Yahoo.Yui.Compressor.dll</HintPath>
+      <HintPath>..\packages\YUICompressor.NET.2.3.0.0\lib\NET20\Yahoo.Yui.Compressor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -167,7 +163,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="3rd Party\GoogleClosure.cs" />
+    <Compile Include="GoogleClosure.cs" />
     <Compile Include="Consts.cs" />
     <Compile Include="OptionControl.cs">
       <SubType>UserControl</SubType>
@@ -182,15 +178,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="3rd Party\AjaxMin.dll" />
-    <Content Include="3rd Party\EcmaScript.NET.dll" />
-    <Content Include="3rd Party\Iesi.Collections.dll" />
-    <Content Include="3rd Party\Yahoo.Yui.Compressor.dll" />
     <Content Include="Resources\logo.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
