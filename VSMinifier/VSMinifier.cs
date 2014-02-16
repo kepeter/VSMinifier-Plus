@@ -8,15 +8,17 @@ using Microsoft.Ajax.Utilities;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using VSLangProj80;
 using Yahoo.Yui.Compressor;
 
 namespace VSMinifier
 {
 	[Guid( Consts.GUID )]
-	[CustomToolRegistration( "VSMinifier" )]
+	[CodeGeneratorRegistration( typeof( VSMinifier ), "VSMinifier", vsContextGuids.vsContextGuidVCSProject )]
+	[CodeGeneratorRegistration( typeof( VSMinifier ), "VSMinifier", vsContextGuids.vsContextGuidVBProject )]
 	[ProvideObject( typeof( VSMinifier ) )]
 	[ProvideOptionPage( typeof( OptionPage ), "Custom Tools", "VSMinifier", 0, 0, true )]
-	[InstalledProductRegistration( "VSMinifier", "VSMinifier", "1.13.1", IconResourceID = 4000 )]
+	[InstalledProductRegistration( "#4001", "#4002", "1.13.1", IconResourceID = 4000 )]
 	public sealed class VSMinifier : Package, IVsSingleFileGenerator
 	{
 		private string _InputFilePath = null;

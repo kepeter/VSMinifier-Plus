@@ -4,7 +4,7 @@
 		<Identity Id="4CC31BE6-1F86-416C-962F-2DBAA8B5F1B4" Version="1.13.1" Language="en-US" Publisher="Eliyahu Peter Kornfeld" />
 		<DisplayName>VSMinifier 2013 Plus</DisplayName>
 		<Description xml:space="preserve">JavaScript and CSS minifier with configurable options...</Description>
-		<Icon>Resources\logo.png</Icon>
+		<Icon>Resources\logo.ico</Icon>
 	</Metadata>
 	<Installation>
 		<InstallationTarget Version="[12.0]" Id="Microsoft.VisualStudio.Pro" />

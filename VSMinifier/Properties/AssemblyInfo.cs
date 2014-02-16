@@ -8,11 +8,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle( "VSMinifier2013" )]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription( "JavaScript and CSS minifier with configurable options..." )]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany( "" )]
 [assembly: AssemblyProduct( "VSMinifier2013" )]
-[assembly: AssemblyCopyright( "2013-2014" )]
+[assembly: AssemblyCopyright( "2013, 2014" )]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]   
 [assembly: ComVisible(false)]     
