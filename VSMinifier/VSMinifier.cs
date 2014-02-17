@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using EnvDTE;
+using EnvDTE80;
 using Microsoft.Ajax.Utilities;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -173,6 +175,19 @@ namespace VSMinifier
 			_InputFilePath = InputFilePath;
 			_InputFileNamespace = DefaultNamespace;
 			_GenerateProgress = GenerateProgress;
+
+			DTE2 Application = ( DTE2 )Package.GetGlobalService( typeof( DTE ) );
+			EnvDTE.ProjectItem oProjectItem = Application.SelectedItems.Item( 1 ).ProjectItem;
+			System.IServiceProvider oServiceProvider = new Microsoft.VisualStudio.Shell.ServiceProvider( ( Microsoft.VisualStudio.OLE.Interop.IServiceProvider )Application );
+			Microsoft.Build.Evaluation.Project oBuildProject = Microsoft.Build.Evaluation.ProjectCollection.GlobalProjectCollection.GetLoadedProjects( oProjectItem.ContainingProject.FullName ).SingleOrDefault( );
+			Microsoft.Build.Evaluation.ProjectProperty oGUID = oBuildProject.AllEvaluatedProperties.SingleOrDefault( oProperty => oProperty.Name == "ProjectGuid" );
+			Microsoft.VisualStudio.Shell.Interop.IVsHierarchy oVsHierarchy = VsShellUtilities.GetHierarchy( oServiceProvider, new Guid( oGUID.EvaluatedValue ) );
+			Microsoft.VisualStudio.Shell.Interop.IVsBuildPropertyStorage oVsBuildPropertyStorage = ( Microsoft.VisualStudio.Shell.Interop.IVsBuildPropertyStorage )oVsHierarchy;
+
+			string szItemPath = ( string )oProjectItem.Properties.Item( "FullPath" ).Value;
+			uint nItemId;
+
+			oVsHierarchy.ParseCanonicalName( szItemPath, out nItemId );
 
 			byte[ ] bOutputFileContents = GenerateCode( InputFileContents );
 
