@@ -29,6 +29,17 @@ namespace VSMinifier
 
 		private void OptionControl_Load ( object sender, EventArgs e )
 		{
+			// Common - Build Action
+			BADefault.Checked = _OptionPage.BuildActionType == BuildActionType.Default;
+			BACopy.Checked = _OptionPage.BuildActionType == BuildActionType.Copy;
+			BACustom.Checked = _OptionPage.BuildActionType == BuildActionType.Custom;
+
+			BACustomOriginal.Text = _OptionPage.OriginalBuildAction;
+			BACustomMinified.Text = _OptionPage.MinifiedBuildAction;
+
+			BACustomOriginal.Enabled = _OptionPage.BuildActionType == BuildActionType.Custom;
+			BACustomMinified.Enabled = _OptionPage.BuildActionType == BuildActionType.Custom;
+
 			// JS
 			JSExt.Text = _OptionPage.JSExt;
 			JSEngine.SelectedIndex = Convert.ToInt32( _OptionPage.JSEngine );
@@ -80,6 +91,49 @@ namespace VSMinifier
 
 			CSSMsMinifier.Dock = CSSYUI.Dock = DockStyle.Bottom;
 		}
+
+		#region Common
+
+		#region Build Action
+
+		private void BADefault_Click ( object sender, EventArgs e )
+		{
+			_OptionPage.BuildActionType = BuildActionType.Default;
+
+			BACustomOriginal.Enabled = false;
+			BACustomMinified.Enabled = false;
+
+		}
+
+		private void BACopy_Click ( object sender, EventArgs e )
+		{
+			_OptionPage.BuildActionType = BuildActionType.Copy;
+
+			BACustomOriginal.Enabled = false;
+			BACustomMinified.Enabled = false;
+		}
+
+		private void BACustom_Click ( object sender, EventArgs e )
+		{
+			_OptionPage.BuildActionType = BuildActionType.Custom;
+
+			BACustomOriginal.Enabled = true;
+			BACustomMinified.Enabled = true;
+		}
+
+		private void BACustomOriginal_SelectedIndexChanged ( object sender, EventArgs e )
+		{
+			_OptionPage.OriginalBuildAction = BACustomOriginal.Text;
+		}
+
+		private void BACustomMinified_SelectedIndexChanged ( object sender, EventArgs e )
+		{
+			_OptionPage.MinifiedBuildAction = BACustomMinified.Text;
+		}
+
+		#endregion
+
+		#endregion
 
 		#region JS
 

@@ -8,6 +8,56 @@ namespace VSMinifier
 	[ComVisible( true )]
 	public class OptionPage : DialogPage
 	{
+		#region Common
+
+		#region Build Action
+
+		private BuildActionType _BuildActionType = BuildActionType.Default;
+
+		public BuildActionType BuildActionType
+		{
+			get
+			{
+				return ( _BuildActionType );
+			}
+			set
+			{
+				_BuildActionType = value;
+			}
+		}
+
+		private string _OriginalBuildAction = "Content";
+
+		public string OriginalBuildAction
+		{
+			get
+			{
+				return ( _OriginalBuildAction );
+			}
+			set
+			{
+				_OriginalBuildAction = value;
+			}
+		}
+
+		private string _MinifiedBuildAction = "Embedded Resource";
+
+		public string MinifiedBuildAction
+		{
+			get
+			{
+				return _MinifiedBuildAction;
+			}
+			set
+			{
+				_MinifiedBuildAction = value;
+			}
+		}
+
+		#endregion
+
+		#endregion
+
 		#region JS
 
 		#region Common

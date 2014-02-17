@@ -206,6 +206,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="OptionControl.resx">
+      <DependentUpon>OptionControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="VSMinifier.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>

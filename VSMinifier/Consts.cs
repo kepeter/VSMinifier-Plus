@@ -11,6 +11,13 @@
 		public const string CSSMinExt = ".min.css";
 	}
 
+	public enum BuildActionType
+	{
+		Default = 0,
+		Copy = 1,
+		Custom = 2
+	}
+
 	public enum JSEngineType
 	{
 		YUICompressor = 0,
