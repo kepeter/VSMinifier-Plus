@@ -56,6 +56,38 @@ namespace VSMinifier
 
 		#endregion
 
+		#region Compile Target
+
+		private CompileTargetType _CompileTargetType = CompileTargetType.Default;
+
+		public CompileTargetType CompileTargetType
+		{
+			get
+			{
+				return ( _CompileTargetType );
+			}
+			set
+			{
+				_CompileTargetType = value;
+			}
+		}
+
+		private bool _EnableManual = false;
+
+		public bool EnableManual
+		{
+			get
+			{
+				return ( _EnableManual );
+			}
+			set
+			{
+				_EnableManual = value;
+			}
+		}
+
+		#endregion
+
 		#endregion
 
 		#region JS

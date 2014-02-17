@@ -18,6 +18,12 @@
 		Custom = 2
 	}
 
+	public enum CompileTargetType
+	{
+		Default = 0,
+		Mixed = 1
+	}
+
 	public enum JSEngineType
 	{
 		YUICompressor = 0,

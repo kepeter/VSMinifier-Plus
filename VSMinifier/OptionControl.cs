@@ -40,6 +40,12 @@ namespace VSMinifier
 			BACustomOriginal.Enabled = _OptionPage.BuildActionType == BuildActionType.Custom;
 			BACustomMinified.Enabled = _OptionPage.BuildActionType == BuildActionType.Custom;
 
+			// Common - Compile Target
+			CTDefault.Checked = _OptionPage.CompileTargetType == CompileTargetType.Default;
+			CTMixed.Checked = _OptionPage.CompileTargetType == CompileTargetType.Mixed;
+
+			CTManual.Checked = _OptionPage.EnableManual;
+
 			// JS
 			JSExt.Text = _OptionPage.JSExt;
 			JSEngine.SelectedIndex = Convert.ToInt32( _OptionPage.JSEngine );
@@ -129,6 +135,25 @@ namespace VSMinifier
 		private void BACustomMinified_SelectedIndexChanged ( object sender, EventArgs e )
 		{
 			_OptionPage.MinifiedBuildAction = BACustomMinified.Text;
+		}
+
+		#endregion
+
+		#region Compile Target
+
+		private void CTDefault_Click ( object sender, EventArgs e )
+		{
+			_OptionPage.CompileTargetType = CompileTargetType.Default;
+		}
+
+		private void CTMixed_Click ( object sender, EventArgs e )
+		{
+			_OptionPage.CompileTargetType = CompileTargetType.Mixed;
+		}
+
+		private void CTManual_Click ( object sender, EventArgs e )
+		{
+			_OptionPage.EnableManual = CTManual.Checked;
 		}
 
 		#endregion

@@ -75,6 +75,10 @@
 			this.label7 = new System.Windows.Forms.Label();
 			this.CSSExt = new System.Windows.Forms.TextBox();
 			this.label8 = new System.Windows.Forms.Label();
+			this.CTGroup = new System.Windows.Forms.GroupBox();
+			this.CTMixed = new System.Windows.Forms.RadioButton();
+			this.CTDefault = new System.Windows.Forms.RadioButton();
+			this.CTManual = new System.Windows.Forms.CheckBox();
 			this.TabControl.SuspendLayout();
 			this.CommonTab.SuspendLayout();
 			this.BAGroup.SuspendLayout();
@@ -85,6 +89,7 @@
 			this.CSSTab.SuspendLayout();
 			this.CSSYUI.SuspendLayout();
 			this.CSSMsMinifier.SuspendLayout();
+			this.CTGroup.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// TabControl
@@ -101,6 +106,7 @@
 			// 
 			// CommonTab
 			// 
+			this.CommonTab.Controls.Add(this.CTGroup);
 			this.CommonTab.Controls.Add(this.BAGroup);
 			this.CommonTab.Location = new System.Drawing.Point(4, 22);
 			this.CommonTab.Name = "CommonTab";
@@ -119,9 +125,9 @@
 			this.BAGroup.Controls.Add(this.BACustom);
 			this.BAGroup.Controls.Add(this.BACopy);
 			this.BAGroup.Controls.Add(this.BADefault);
-			this.BAGroup.Location = new System.Drawing.Point(9, 6);
+			this.BAGroup.Location = new System.Drawing.Point(3, 3);
 			this.BAGroup.Name = "BAGroup";
-			this.BAGroup.Size = new System.Drawing.Size(652, 142);
+			this.BAGroup.Size = new System.Drawing.Size(661, 118);
 			this.BAGroup.TabIndex = 0;
 			this.BAGroup.TabStop = false;
 			this.BAGroup.Text = "Build Action";
@@ -645,6 +651,55 @@
 			this.label8.TabIndex = 7;
 			this.label8.Text = "Extension for minified file:";
 			// 
+			// CTGroup
+			// 
+			this.CTGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.CTGroup.Controls.Add(this.CTManual);
+			this.CTGroup.Controls.Add(this.CTMixed);
+			this.CTGroup.Controls.Add(this.CTDefault);
+			this.CTGroup.Location = new System.Drawing.Point(3, 127);
+			this.CTGroup.Name = "CTGroup";
+			this.CTGroup.Size = new System.Drawing.Size(661, 88);
+			this.CTGroup.TabIndex = 1;
+			this.CTGroup.TabStop = false;
+			this.CTGroup.Text = "Compilation Target";
+			// 
+			// CTMixed
+			// 
+			this.CTMixed.AutoSize = true;
+			this.CTMixed.Location = new System.Drawing.Point(6, 42);
+			this.CTMixed.Name = "CTMixed";
+			this.CTMixed.Size = new System.Drawing.Size(234, 17);
+			this.CTMixed.TabIndex = 2;
+			this.CTMixed.Text = "Original file to Debug and minifed to Release";
+			this.CTMixed.UseVisualStyleBackColor = true;
+			this.CTMixed.Click += new System.EventHandler(this.CTMixed_Click);
+			// 
+			// CTDefault
+			// 
+			this.CTDefault.AutoSize = true;
+			this.CTDefault.Checked = true;
+			this.CTDefault.Location = new System.Drawing.Point(6, 19);
+			this.CTDefault.Name = "CTDefault";
+			this.CTDefault.Size = new System.Drawing.Size(123, 17);
+			this.CTDefault.TabIndex = 1;
+			this.CTDefault.TabStop = true;
+			this.CTDefault.Text = "Use default behavior";
+			this.CTDefault.UseVisualStyleBackColor = true;
+			this.CTDefault.Click += new System.EventHandler(this.CTDefault_Click);
+			// 
+			// CTManual
+			// 
+			this.CTManual.AutoSize = true;
+			this.CTManual.Location = new System.Drawing.Point(6, 65);
+			this.CTManual.Name = "CTManual";
+			this.CTManual.Size = new System.Drawing.Size(113, 17);
+			this.CTManual.TabIndex = 3;
+			this.CTManual.Text = "Enable manual set";
+			this.CTManual.UseVisualStyleBackColor = true;
+			this.CTManual.Click += new System.EventHandler(this.CTManual_Click);
+			// 
 			// OptionControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -671,6 +726,8 @@
 			this.CSSYUI.PerformLayout();
 			this.CSSMsMinifier.ResumeLayout(false);
 			this.CSSMsMinifier.PerformLayout();
+			this.CTGroup.ResumeLayout(false);
+			this.CTGroup.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -724,5 +781,9 @@
 		private System.Windows.Forms.RadioButton BACustom;
 		private System.Windows.Forms.RadioButton BACopy;
 		private System.Windows.Forms.RadioButton BADefault;
+		private System.Windows.Forms.GroupBox CTGroup;
+		private System.Windows.Forms.CheckBox CTManual;
+		private System.Windows.Forms.RadioButton CTMixed;
+		private System.Windows.Forms.RadioButton CTDefault;
 	}
 }
