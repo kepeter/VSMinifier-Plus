@@ -13,27 +13,27 @@
 
 	public enum BuildActionType
 	{
-		Default = 0,
-		Copy = 1,
-		Custom = 2
+		Default,
+		Copy,
+		Custom
 	}
 
 	public enum CompileTargetType
 	{
-		Default = 0,
-		Mixed = 1
+		Default,
+		Mixed
 	}
 
 	public enum JSEngineType
 	{
-		YUICompressor = 0,
-		MicrosoftAjaxMinifier = 1,
-		GoogleClosureCompiler = 2
+		YUICompressor,
+		MicrosoftAjaxMinifier,
+		GoogleClosureCompiler
 	}
 
 	public enum CSSEngineType
 	{
-		YUICompressor = 0,
-		MicrosoftAjaxMinifier = 1,
+		YUICompressor,
+		MicrosoftAjaxMinifier,
 	}
 }

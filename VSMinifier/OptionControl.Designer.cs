@@ -30,6 +30,10 @@
 		{
 			this.TabControl = new System.Windows.Forms.TabControl();
 			this.CommonTab = new System.Windows.Forms.TabPage();
+			this.CTGroup = new System.Windows.Forms.GroupBox();
+			this.CTManual = new System.Windows.Forms.CheckBox();
+			this.CTMixed = new System.Windows.Forms.RadioButton();
+			this.CTDefault = new System.Windows.Forms.RadioButton();
 			this.BAGroup = new System.Windows.Forms.GroupBox();
 			this.BACustomMinified = new System.Windows.Forms.ComboBox();
 			this.label4 = new System.Windows.Forms.Label();
@@ -75,12 +79,9 @@
 			this.label7 = new System.Windows.Forms.Label();
 			this.CSSExt = new System.Windows.Forms.TextBox();
 			this.label8 = new System.Windows.Forms.Label();
-			this.CTGroup = new System.Windows.Forms.GroupBox();
-			this.CTMixed = new System.Windows.Forms.RadioButton();
-			this.CTDefault = new System.Windows.Forms.RadioButton();
-			this.CTManual = new System.Windows.Forms.CheckBox();
 			this.TabControl.SuspendLayout();
 			this.CommonTab.SuspendLayout();
+			this.CTGroup.SuspendLayout();
 			this.BAGroup.SuspendLayout();
 			this.JSTab.SuspendLayout();
 			this.JSYUI.SuspendLayout();
@@ -89,7 +90,6 @@
 			this.CSSTab.SuspendLayout();
 			this.CSSYUI.SuspendLayout();
 			this.CSSMsMinifier.SuspendLayout();
-			this.CTGroup.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// TabControl
@@ -115,6 +115,55 @@
 			this.CommonTab.Text = "Common";
 			this.CommonTab.UseVisualStyleBackColor = true;
 			// 
+			// CTGroup
+			// 
+			this.CTGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.CTGroup.Controls.Add(this.CTManual);
+			this.CTGroup.Controls.Add(this.CTMixed);
+			this.CTGroup.Controls.Add(this.CTDefault);
+			this.CTGroup.Location = new System.Drawing.Point(3, 127);
+			this.CTGroup.Name = "CTGroup";
+			this.CTGroup.Size = new System.Drawing.Size(661, 88);
+			this.CTGroup.TabIndex = 1;
+			this.CTGroup.TabStop = false;
+			this.CTGroup.Text = "Compilation Target";
+			// 
+			// CTManual
+			// 
+			this.CTManual.AutoSize = true;
+			this.CTManual.Location = new System.Drawing.Point(6, 65);
+			this.CTManual.Name = "CTManual";
+			this.CTManual.Size = new System.Drawing.Size(113, 17);
+			this.CTManual.TabIndex = 3;
+			this.CTManual.Text = "Enable manual set";
+			this.CTManual.UseVisualStyleBackColor = true;
+			this.CTManual.Click += new System.EventHandler(this.CTManual_Click);
+			// 
+			// CTMixed
+			// 
+			this.CTMixed.AutoSize = true;
+			this.CTMixed.Location = new System.Drawing.Point(6, 42);
+			this.CTMixed.Name = "CTMixed";
+			this.CTMixed.Size = new System.Drawing.Size(234, 17);
+			this.CTMixed.TabIndex = 2;
+			this.CTMixed.Text = "Original file to Debug and minifed to Release";
+			this.CTMixed.UseVisualStyleBackColor = true;
+			this.CTMixed.Click += new System.EventHandler(this.CTMixed_Click);
+			// 
+			// CTDefault
+			// 
+			this.CTDefault.AutoSize = true;
+			this.CTDefault.Checked = true;
+			this.CTDefault.Location = new System.Drawing.Point(6, 19);
+			this.CTDefault.Name = "CTDefault";
+			this.CTDefault.Size = new System.Drawing.Size(123, 17);
+			this.CTDefault.TabIndex = 1;
+			this.CTDefault.TabStop = true;
+			this.CTDefault.Text = "Use default behavior";
+			this.CTDefault.UseVisualStyleBackColor = true;
+			this.CTDefault.Click += new System.EventHandler(this.CTDefault_Click);
+			// 
 			// BAGroup
 			// 
 			this.BAGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -137,10 +186,9 @@
 			this.BACustomMinified.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.BACustomMinified.FormattingEnabled = true;
 			this.BACustomMinified.Items.AddRange(new object[] {
-            "[Default]",
             "None",
             "Content",
-            "Embedded Resource"});
+            "EmbeddedResource"});
 			this.BACustomMinified.Location = new System.Drawing.Point(135, 91);
 			this.BACustomMinified.Name = "BACustomMinified";
 			this.BACustomMinified.Size = new System.Drawing.Size(125, 21);
@@ -161,10 +209,9 @@
 			this.BACustomOriginal.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.BACustomOriginal.FormattingEnabled = true;
 			this.BACustomOriginal.Items.AddRange(new object[] {
-            "[Default]",
             "None",
             "Content",
-            "Embedded Resource"});
+            "EmbeddedResource"});
 			this.BACustomOriginal.Location = new System.Drawing.Point(135, 64);
 			this.BACustomOriginal.Name = "BACustomOriginal";
 			this.BACustomOriginal.Size = new System.Drawing.Size(125, 21);
@@ -651,55 +698,6 @@
 			this.label8.TabIndex = 7;
 			this.label8.Text = "Extension for minified file:";
 			// 
-			// CTGroup
-			// 
-			this.CTGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.CTGroup.Controls.Add(this.CTManual);
-			this.CTGroup.Controls.Add(this.CTMixed);
-			this.CTGroup.Controls.Add(this.CTDefault);
-			this.CTGroup.Location = new System.Drawing.Point(3, 127);
-			this.CTGroup.Name = "CTGroup";
-			this.CTGroup.Size = new System.Drawing.Size(661, 88);
-			this.CTGroup.TabIndex = 1;
-			this.CTGroup.TabStop = false;
-			this.CTGroup.Text = "Compilation Target";
-			// 
-			// CTMixed
-			// 
-			this.CTMixed.AutoSize = true;
-			this.CTMixed.Location = new System.Drawing.Point(6, 42);
-			this.CTMixed.Name = "CTMixed";
-			this.CTMixed.Size = new System.Drawing.Size(234, 17);
-			this.CTMixed.TabIndex = 2;
-			this.CTMixed.Text = "Original file to Debug and minifed to Release";
-			this.CTMixed.UseVisualStyleBackColor = true;
-			this.CTMixed.Click += new System.EventHandler(this.CTMixed_Click);
-			// 
-			// CTDefault
-			// 
-			this.CTDefault.AutoSize = true;
-			this.CTDefault.Checked = true;
-			this.CTDefault.Location = new System.Drawing.Point(6, 19);
-			this.CTDefault.Name = "CTDefault";
-			this.CTDefault.Size = new System.Drawing.Size(123, 17);
-			this.CTDefault.TabIndex = 1;
-			this.CTDefault.TabStop = true;
-			this.CTDefault.Text = "Use default behavior";
-			this.CTDefault.UseVisualStyleBackColor = true;
-			this.CTDefault.Click += new System.EventHandler(this.CTDefault_Click);
-			// 
-			// CTManual
-			// 
-			this.CTManual.AutoSize = true;
-			this.CTManual.Location = new System.Drawing.Point(6, 65);
-			this.CTManual.Name = "CTManual";
-			this.CTManual.Size = new System.Drawing.Size(113, 17);
-			this.CTManual.TabIndex = 3;
-			this.CTManual.Text = "Enable manual set";
-			this.CTManual.UseVisualStyleBackColor = true;
-			this.CTManual.Click += new System.EventHandler(this.CTManual_Click);
-			// 
 			// OptionControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -710,6 +708,8 @@
 			this.Load += new System.EventHandler(this.OptionControl_Load);
 			this.TabControl.ResumeLayout(false);
 			this.CommonTab.ResumeLayout(false);
+			this.CTGroup.ResumeLayout(false);
+			this.CTGroup.PerformLayout();
 			this.BAGroup.ResumeLayout(false);
 			this.BAGroup.PerformLayout();
 			this.JSTab.ResumeLayout(false);
@@ -726,8 +726,6 @@
 			this.CSSYUI.PerformLayout();
 			this.CSSMsMinifier.ResumeLayout(false);
 			this.CSSMsMinifier.PerformLayout();
-			this.CTGroup.ResumeLayout(false);
-			this.CTGroup.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
