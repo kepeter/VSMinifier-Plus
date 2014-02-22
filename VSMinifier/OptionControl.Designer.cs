@@ -145,9 +145,9 @@
 			this.CTMixed.AutoSize = true;
 			this.CTMixed.Location = new System.Drawing.Point(6, 42);
 			this.CTMixed.Name = "CTMixed";
-			this.CTMixed.Size = new System.Drawing.Size(234, 17);
+			this.CTMixed.Size = new System.Drawing.Size(267, 17);
 			this.CTMixed.TabIndex = 2;
-			this.CTMixed.Text = "Original file to Debug and minifed to Release";
+			this.CTMixed.Text = "Set original file to Debug and minifed file to Release";
 			this.CTMixed.UseVisualStyleBackColor = true;
 			this.CTMixed.Click += new System.EventHandler(this.CTMixed_Click);
 			// 

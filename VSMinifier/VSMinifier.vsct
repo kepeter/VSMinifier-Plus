@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<Extern href="stdidcmd.h"/>
+	<Extern href="vsshlids.h"/>
+
+	<Commands package="VSMinifierPackage">
+		<Groups>
+			<Group guid="VSMinifierMenu" id="MenuGroup" priority="0">
+				<Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
+			</Group>
+		</Groups>
+
+		<Combos>
+			<Combo guid="VSMinifierMenu" id="CompileTargetCommand" idCommandList="CompileTargetCommandList" type="DropDownCombo" defaultWidth="30" priority="0">
+				<Parent guid="VSMinifierMenu" id="MenuGroup" />
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<Strings>
+					<ButtonText>Compile Target</ButtonText>
+					<CommandName>VSMinifierMenu</CommandName>
+					<ToolTipText>Select Compile Target for Item</ToolTipText>
+				</Strings>
+			</Combo>
+		</Combos>
+	</Commands>
+
+	<Symbols>
+		<GuidSymbol name="VSMinifierPackage" value="{4CC31BE6-1F86-416C-962F-2DBAA8B5F1B4}" />
+
+		<GuidSymbol name="VSMinifierMenu" value="{E6315A3D-320F-4B5E-B626-63D1FB730B94}">
+			<IDSymbol name="MenuGroup" value="0x1020" />
+			<IDSymbol name="CompileTargetCommand" value="0x0100" />
+			<IDSymbol name="CompileTargetCommandList" value="0x0110" />
+		</GuidSymbol>
+	</Symbols>
+</CommandTable>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -20,50 +21,143 @@ namespace VSMinifier
 	[CodeGeneratorRegistration( typeof( VSMinifier ), "VSMinifier", vsContextGuids.vsContextGuidVBProject )]
 	[ProvideObject( typeof( VSMinifier ) )]
 	[ProvideOptionPage( typeof( OptionPage ), "Custom Tools", "VSMinifier", 0, 0, true )]
+	[ProvideMenuResource( "VSCT", 1 )]
 	[InstalledProductRegistration( "#4001", "#4002", "1.13.1", IconResourceID = 4000 )]
 	public sealed class VSMinifier : Package, IVsSingleFileGenerator
 	{
 		private string _Ext;
+
+		#region Application
+
+		private EnvDTE80.DTE2 _Application;
+
+		public EnvDTE80.DTE2 Application
+		{
+			get
+			{
+				if ( _Application == null )
+				{
+					_Application = ( EnvDTE80.DTE2 )Package.GetGlobalService( typeof( EnvDTE.DTE ) );
+				}
+
+				return ( _Application );
+			}
+		}
+
+		#endregion
+
+		#region ProjectItem
+
+
+		#endregion
+
+		#region OptionPage
+
 		private OptionPage _OptionPage;
+
+		public OptionPage OptionPage
+		{
+			get
+			{
+				if ( _OptionPage == null )
+				{
+					_OptionPage = new OptionPage( );
+					PropertyInfo[ ] oPropertyInfoArray = _OptionPage.GetType( ).GetProperties( );
+					Properties oProperties = Application.get_Properties( "Custom Tools", "VSMinifier" );
+
+					foreach ( PropertyInfo oPropertyInfo in oPropertyInfoArray )
+					{
+						if ( oPropertyInfo.ReflectedType == oPropertyInfo.DeclaringType )
+						{
+							oPropertyInfo.SetValue( _OptionPage, oProperties.Item( oPropertyInfo.Name ).Value, null );
+						}
+					}
+				}
+
+				return ( _OptionPage );
+			}
+		}
+
+		#endregion
+
+		protected override void Initialize ( )
+		{
+			base.Initialize( );
+
+			OleMenuCommandService oOleMenuCommandService = ( OleMenuCommandService )GetService( typeof( IMenuCommandService ) );
+
+			if ( oOleMenuCommandService != null )
+			{
+				CommandID oCommandID = new CommandID( Consts.MenuGUID, ( int )Consts.CompileTargetCommand );
+				CommandID oCommandListID = new CommandID( Consts.MenuGUID, ( int )Consts.CompileTargetCommandList );
+
+				OleMenuCommand oCommand = new OleMenuCommand( CommandInvoke, oCommandID );
+				OleMenuCommand oCommandList = new OleMenuCommand( CommandListInvoke, oCommandListID );
+
+				oCommand.BeforeQueryStatus += CommandQueryStatus;
+
+				oOleMenuCommandService.AddCommand( oCommand );
+				oOleMenuCommandService.AddCommand( oCommandList );
+			}
+		}
+
+		private void CommandInvoke ( object sender, EventArgs e )
+		{
+		}
+
+		private void CommandListInvoke ( object sender, EventArgs e )
+		{
+			OleMenuCmdEventArgs oOleMenuCmdEventArgs = ( OleMenuCmdEventArgs )e;
+
+			if ( oOleMenuCmdEventArgs.OutValue != IntPtr.Zero )
+			{
+				Marshal.GetNativeVariantForObject( new string[ ] { "Default", "Debug", "Release" }, oOleMenuCmdEventArgs.OutValue );
+			}
+		}
+
+		private void CommandQueryStatus ( object sender, EventArgs e )
+		{
+			OleMenuCommand oCommand = ( OleMenuCommand )sender;
+
+			oCommand.Visible = true;
+		}
 
 		private byte[ ] GenerateCode ( string InputFileContent, string InputFilePath, IVsGeneratorProgress GenerateProgress )
 		{
 			bool bDo = false;
 			string OutputFileContent = InputFileContent;
-			
-			_OptionPage = LoadOptions( );
 
 			_Ext = Path.GetExtension( InputFilePath );
 
 			if ( _Ext.Equals( Consts.CSSExt ) )
 			{
-				_Ext = _OptionPage.CSSExt;
+				_Ext = OptionPage.CSSExt;
 				bDo = true;
 			}
 
 			if ( _Ext.Equals( Consts.JSExt ) )
 			{
-				_Ext = _OptionPage.JSExt;
+				_Ext = OptionPage.JSExt;
 				bDo = true;
 			}
 
 			if ( bDo )
 			{
-				if ( _Ext == _OptionPage.JSExt )
+				if ( _Ext == OptionPage.JSExt )
 				{
-					switch ( _OptionPage.JSEngine )
+					switch ( OptionPage.JSEngine )
 					{
 						case JSEngineType.MicrosoftAjaxMinifier:
 						{
 							Minifier oMinifier = new Minifier( );
 							CodeSettings oSettings = new CodeSettings( );
 
-							oSettings.LocalRenaming = _OptionPage.JSMsLocalRename;
-							oSettings.OutputMode = _OptionPage.JSMsOutputMode;
-							oSettings.PreserveImportantComments = _OptionPage.JSMsPreserveImportantComments;
-							oSettings.RemoveUnneededCode = _OptionPage.JSMsRemoveUnneededCode;
-							oSettings.PreserveFunctionNames = _OptionPage.JSMsPreserveFunctionNames;
-							oSettings.RemoveFunctionExpressionNames = _OptionPage.JSMsRemoveFunctionExpressionNames;
+							oSettings.LocalRenaming = OptionPage.JSMsLocalRename;
+							oSettings.OutputMode = OptionPage.JSMsOutputMode;
+							oSettings.PreserveImportantComments = OptionPage.JSMsPreserveImportantComments;
+							oSettings.RemoveUnneededCode = OptionPage.JSMsRemoveUnneededCode;
+							oSettings.PreserveFunctionNames = OptionPage.JSMsPreserveFunctionNames;
+							oSettings.RemoveFunctionExpressionNames = OptionPage.JSMsRemoveFunctionExpressionNames;
 
 							OutputFileContent = oMinifier.MinifyJavaScript( InputFileContent, oSettings );
 						}
@@ -73,7 +167,7 @@ namespace VSMinifier
 						{
 							GoogleClosure oCompiler = new GoogleClosure( );
 
-							OutputFileContent = oCompiler.Compress( InputFileContent, _OptionPage.JSGCompilationLevel );
+							OutputFileContent = oCompiler.Compress( InputFileContent, OptionPage.JSGCompilationLevel );
 						}
 						break;
 
@@ -83,9 +177,9 @@ namespace VSMinifier
 
 							oCompressor.CompressionType = CompressionType.Standard;
 
-							oCompressor.DisableOptimizations = _OptionPage.JSYDisableOptimizations;
-							oCompressor.PreserveAllSemicolons = _OptionPage.JSYPreserveAllSemicolons;
-							oCompressor.ObfuscateJavascript = _OptionPage.JSYObfuscateJavascript;
+							oCompressor.DisableOptimizations = OptionPage.JSYDisableOptimizations;
+							oCompressor.PreserveAllSemicolons = OptionPage.JSYPreserveAllSemicolons;
+							oCompressor.ObfuscateJavascript = OptionPage.JSYObfuscateJavascript;
 
 							OutputFileContent = oCompressor.Compress( InputFileContent );
 						}
@@ -93,20 +187,20 @@ namespace VSMinifier
 					}
 				}
 
-				if ( _Ext == _OptionPage.CSSExt )
+				if ( _Ext == OptionPage.CSSExt )
 				{
-					switch ( _OptionPage.CSSEngine )
+					switch ( OptionPage.CSSEngine )
 					{
 						case CSSEngineType.MicrosoftAjaxMinifier:
 						{
 							Minifier oMinifier = new Minifier( );
 							CssSettings oSettings = new CssSettings( );
 
-							oSettings.ColorNames = _OptionPage.CSSMsColorNames;
-							oSettings.CommentMode = _OptionPage.CSSMsCommentMode;
-							oSettings.CssType = _OptionPage.CSSMsCssType;
-							oSettings.MinifyExpressions = _OptionPage.CSSMsMinifyExpressions;
-							oSettings.OutputMode = _OptionPage.CSSMsOutputMode;
+							oSettings.ColorNames = OptionPage.CSSMsColorNames;
+							oSettings.CommentMode = OptionPage.CSSMsCommentMode;
+							oSettings.CssType = OptionPage.CSSMsCssType;
+							oSettings.MinifyExpressions = OptionPage.CSSMsMinifyExpressions;
+							oSettings.OutputMode = OptionPage.CSSMsOutputMode;
 
 							OutputFileContent = oMinifier.MinifyStyleSheet( InputFileContent, oSettings );
 						}
@@ -118,7 +212,7 @@ namespace VSMinifier
 
 							oCompressor.CompressionType = CompressionType.Standard;
 
-							oCompressor.RemoveComments = _OptionPage.CSSYRemoveComments;
+							oCompressor.RemoveComments = OptionPage.CSSYRemoveComments;
 
 							OutputFileContent = oCompressor.Compress( InputFileContent );
 						}
@@ -141,25 +235,6 @@ namespace VSMinifier
 			return ( _Ext );
 		}
 
-		private OptionPage LoadOptions ( )
-		{
-			OptionPage oOptionPage = new OptionPage( );
-			PropertyInfo[ ] oPropertyInfoArray = oOptionPage.GetType( ).GetProperties( );
-
-			DTE oDTE = ( DTE )GetGlobalService( typeof( DTE ) );
-			Properties oProperties = oDTE.get_Properties( "Custom Tools", "VSMinifier" );
-
-			foreach ( PropertyInfo oPropertyInfo in oPropertyInfoArray )
-			{
-				if ( oPropertyInfo.ReflectedType == oPropertyInfo.DeclaringType )
-				{
-					oPropertyInfo.SetValue( oOptionPage, oProperties.Item( oPropertyInfo.Name ).Value, null );
-				}
-			}
-
-			return ( oOptionPage );
-		}
-
 		#region IVsSingleFileGenerator Members
 
 		int IVsSingleFileGenerator.DefaultExtension ( out string DefaultExtension )
@@ -174,7 +249,6 @@ namespace VSMinifier
 			byte[ ] bOutputFileContents = GenerateCode( InputFileContents, InputFilePath, GenerateProgress );
 			string szOutputFilePath = InputFilePath.Replace( Path.GetExtension( InputFilePath ), _Ext );
 
-			EnvDTE80.DTE2 Application = ( EnvDTE80.DTE2 )Package.GetGlobalService( typeof( EnvDTE.DTE ) );
 			EnvDTE.ProjectItem oProjectItem = Application.SelectedItems.Item( 1 ).ProjectItem;
 			System.IServiceProvider oServiceProvider = new Microsoft.VisualStudio.Shell.ServiceProvider( ( Microsoft.VisualStudio.OLE.Interop.IServiceProvider )Application );
 			Microsoft.Build.Evaluation.Project oBuildProject = Microsoft.Build.Evaluation.ProjectCollection.GlobalProjectCollection.GetLoadedProjects( oProjectItem.ContainingProject.FullName ).SingleOrDefault( );
@@ -197,12 +271,12 @@ namespace VSMinifier
 
 				oVsHierarchy.ParseCanonicalName( InputFilePath, out nItemId );
 
-				if (  oVsProject.AddItem( nItemId, VSADDITEMOPERATION.VSADDITEMOP_OPENFILE, szOutputFilePath, 1, new string[ ] { szOutputFilePath }, IntPtr.Zero, oAddResult ) == VSConstants.S_OK )
+				if ( oVsProject.AddItem( nItemId, VSADDITEMOPERATION.VSADDITEMOP_OPENFILE, szOutputFilePath, 1, new string[ ] { szOutputFilePath }, IntPtr.Zero, oAddResult ) == VSConstants.S_OK )
 				{
 					oVsHierarchy.ParseCanonicalName( szOutputFilePath, out nMinItemId );
 
-					Microsoft.Build.Evaluation.ProjectItem oItem = oBuildProject.Items.Where( item => item.EvaluatedInclude.EndsWith( Path.GetFileName( InputFilePath ) ) ).Single( );
-					Microsoft.Build.Evaluation.ProjectItem oMinItem = oBuildProject.Items.Where( item => item.EvaluatedInclude.EndsWith( Path.GetFileName( szOutputFilePath ) ) ).Single( );
+					Microsoft.Build.Evaluation.ProjectItem oItem = oBuildProject.ItemsIgnoringCondition.Where( item => item.EvaluatedInclude.EndsWith( Path.GetFileName( InputFilePath ) ) ).Single( );
+					Microsoft.Build.Evaluation.ProjectItem oMinItem = oBuildProject.ItemsIgnoringCondition.Where( item => item.EvaluatedInclude.EndsWith( Path.GetFileName( szOutputFilePath ) ) ).Single( );
 
 					oVsBuildPropertyStorage.SetItemAttribute( nItemId, "LastGenOutput", Path.GetFileName( szOutputFilePath ) );
 
@@ -211,7 +285,7 @@ namespace VSMinifier
 					oVsBuildPropertyStorage.SetItemAttribute( nMinItemId, "DependentUpon", Path.GetFileName( InputFilePath ) );
 
 					//////////////////////
-					switch (_OptionPage.CompileTargetType)
+					switch ( OptionPage.CompileTargetType )
 					{
 						case CompileTargetType.Default:
 						{
@@ -227,16 +301,9 @@ namespace VSMinifier
 						}
 						break;
 					}
-					
-					switch(_OptionPage.BuildActionType)
-					{
-						case BuildActionType.Default:
-						{
-							oItem.ItemType = "Content";
-							oMinItem.ItemType = "Content";
-						}
-						break;
 
+					switch ( OptionPage.BuildActionType )
+					{
 						case BuildActionType.Copy:
 						{
 							oMinItem.ItemType = oItem.ItemType;
@@ -245,8 +312,8 @@ namespace VSMinifier
 
 						case BuildActionType.Custom:
 						{
-							oItem.ItemType = _OptionPage.OriginalBuildAction;
-							oMinItem.ItemType = _OptionPage.MinifiedBuildAction;
+							oItem.ItemType = OptionPage.OriginalBuildAction;
+							oMinItem.ItemType = OptionPage.MinifiedBuildAction;
 						}
 						break;
 					}
