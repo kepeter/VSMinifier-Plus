@@ -48,6 +48,150 @@ namespace VSMinifier
 
 		#region ProjectItem
 
+		public EnvDTE.ProjectItem ProjectItem
+		{
+			get
+			{
+				return ( Application.SelectedItems.Item( 1 ).ProjectItem );
+			}
+		}
+
+		#endregion
+
+		#region ServiceProvider
+
+		private System.IServiceProvider _ServiceProvider;
+
+		public System.IServiceProvider ServiceProvider
+		{
+			get
+			{
+				if ( _ServiceProvider == null )
+				{
+					_ServiceProvider = new Microsoft.VisualStudio.Shell.ServiceProvider( ( Microsoft.VisualStudio.OLE.Interop.IServiceProvider )Application );
+				}
+
+				return ( _ServiceProvider );
+			}
+		}
+
+		#endregion
+
+		#region BuildProject
+
+		private Microsoft.Build.Evaluation.Project _BuildProject;
+
+		public Microsoft.Build.Evaluation.Project BuildProject
+		{
+			get
+			{
+				if ( _BuildProject == null )
+				{
+					_BuildProject = Microsoft.Build.Evaluation.ProjectCollection.GlobalProjectCollection.GetLoadedProjects( ProjectItem.ContainingProject.FullName ).SingleOrDefault( );
+				}
+
+				return ( _BuildProject );
+			}
+		}
+		#endregion
+
+		#region ProjectGUID
+
+		private Microsoft.Build.Evaluation.ProjectProperty _ProjectGUID;
+
+		Microsoft.Build.Evaluation.ProjectProperty ProjectGUID
+		{
+			get
+			{
+				if ( _ProjectGUID == null )
+				{
+					_ProjectGUID = BuildProject.AllEvaluatedProperties.SingleOrDefault( oProperty => oProperty.Name == "ProjectGuid" );
+				}
+
+				return ( _ProjectGUID );
+			}
+		}
+
+		#endregion
+
+		#region ProjectName
+
+		private Microsoft.Build.Evaluation.ProjectProperty _ProjectName;
+
+		Microsoft.Build.Evaluation.ProjectProperty ProjectName
+		{
+			get
+			{
+				if ( _ProjectName == null )
+				{
+					_ProjectName = BuildProject.AllEvaluatedProperties.SingleOrDefault( oProperty => oProperty.Name == "ProjectName" );
+				}
+
+				return ( _ProjectName );
+			}
+		}
+
+		#endregion
+
+		#region VsHierarchy
+
+		private Microsoft.VisualStudio.Shell.Interop.IVsHierarchy _VsHierarchy;
+
+		public Microsoft.VisualStudio.Shell.Interop.IVsHierarchy VsHierarchy
+		{
+			get
+			{
+				if ( _VsHierarchy == null )
+				{
+					_VsHierarchy = VsShellUtilities.GetHierarchy( ServiceProvider, new Guid( ProjectGUID.EvaluatedValue ) );
+				}
+
+				return ( _VsHierarchy );
+			}
+
+		}
+
+		#endregion
+
+		#region VsProject
+
+		public Microsoft.VisualStudio.Shell.Interop.IVsProject VsProject
+		{
+			get
+			{
+				return ( ( IVsProject )VsHierarchy );
+			}
+		}
+
+		#endregion
+
+		#region VsBuildPropertyStorage
+
+		public Microsoft.VisualStudio.Shell.Interop.IVsBuildPropertyStorage VsBuildPropertyStorage
+		{
+			get
+			{
+				return ( ( Microsoft.VisualStudio.Shell.Interop.IVsBuildPropertyStorage )VsHierarchy );
+			}
+		}
+
+		#endregion
+
+		#region Helpers
+
+		private Microsoft.Build.Evaluation.ProjectItem GetProjectItem ( string ItemPath )
+		{
+			return ( BuildProject.ItemsIgnoringCondition.Where( item => item.EvaluatedInclude.EndsWith( Path.GetFileName( ItemPath ) ) ).Single( ) );
+		}
+
+		private uint GetProjectItemId ( string ItemPath )
+		{
+			uint nID;
+
+			VsHierarchy.ParseCanonicalName( ItemPath, out nID );
+
+			return ( nID );
+		}
 
 		#endregion
 
@@ -249,40 +393,30 @@ namespace VSMinifier
 			byte[ ] bOutputFileContents = GenerateCode( InputFileContents, InputFilePath, GenerateProgress );
 			string szOutputFilePath = InputFilePath.Replace( Path.GetExtension( InputFilePath ), _Ext );
 
-			EnvDTE.ProjectItem oProjectItem = Application.SelectedItems.Item( 1 ).ProjectItem;
-			System.IServiceProvider oServiceProvider = new Microsoft.VisualStudio.Shell.ServiceProvider( ( Microsoft.VisualStudio.OLE.Interop.IServiceProvider )Application );
-			Microsoft.Build.Evaluation.Project oBuildProject = Microsoft.Build.Evaluation.ProjectCollection.GlobalProjectCollection.GetLoadedProjects( oProjectItem.ContainingProject.FullName ).SingleOrDefault( );
-			Microsoft.Build.Evaluation.ProjectProperty oGUID = oBuildProject.AllEvaluatedProperties.SingleOrDefault( oProperty => oProperty.Name == "ProjectGuid" );
-			Microsoft.Build.Evaluation.ProjectProperty oName = oBuildProject.AllEvaluatedProperties.Single( oProperty => oProperty.Name == "ProjectName" );
-			Microsoft.VisualStudio.Shell.Interop.IVsHierarchy oVsHierarchy = VsShellUtilities.GetHierarchy( oServiceProvider, new Guid( oGUID.EvaluatedValue ) );
-			Microsoft.VisualStudio.Shell.Interop.IVsProject oVsProject = ( IVsProject )oVsHierarchy;
-			Microsoft.VisualStudio.Shell.Interop.IVsBuildPropertyStorage oVsBuildPropertyStorage = ( Microsoft.VisualStudio.Shell.Interop.IVsBuildPropertyStorage )oVsHierarchy;
-			VSADDRESULT[ ] oAddResult = new VSADDRESULT[ 1 ];
-
-			uint nItemId;
-			uint nMinItemId;
-
 			if ( bOutputFileContents != null )
 			{
+				uint nItemId;
+				uint nMinItemId;
+				VSADDRESULT[ ] oAddResult = new VSADDRESULT[ 1 ];
 				FileStream oOutputFile = File.Create( szOutputFilePath );
 
 				oOutputFile.Write( bOutputFileContents, 0, bOutputFileContents.Length );
 				oOutputFile.Close( );
 
-				oVsHierarchy.ParseCanonicalName( InputFilePath, out nItemId );
+				nItemId = GetProjectItemId( InputFilePath );
 
-				if ( oVsProject.AddItem( nItemId, VSADDITEMOPERATION.VSADDITEMOP_OPENFILE, szOutputFilePath, 1, new string[ ] { szOutputFilePath }, IntPtr.Zero, oAddResult ) == VSConstants.S_OK )
+				if ( VsProject.AddItem( nItemId, VSADDITEMOPERATION.VSADDITEMOP_OPENFILE, szOutputFilePath, 1, new string[ ] { szOutputFilePath }, IntPtr.Zero, oAddResult ) == VSConstants.S_OK )
 				{
-					oVsHierarchy.ParseCanonicalName( szOutputFilePath, out nMinItemId );
+					nMinItemId = GetProjectItemId( szOutputFilePath );
 
-					Microsoft.Build.Evaluation.ProjectItem oItem = oBuildProject.ItemsIgnoringCondition.Where( item => item.EvaluatedInclude.EndsWith( Path.GetFileName( InputFilePath ) ) ).Single( );
-					Microsoft.Build.Evaluation.ProjectItem oMinItem = oBuildProject.ItemsIgnoringCondition.Where( item => item.EvaluatedInclude.EndsWith( Path.GetFileName( szOutputFilePath ) ) ).Single( );
+					Microsoft.Build.Evaluation.ProjectItem oItem = GetProjectItem( InputFilePath );
+					Microsoft.Build.Evaluation.ProjectItem oMinItem = GetProjectItem( szOutputFilePath );
 
-					oVsBuildPropertyStorage.SetItemAttribute( nItemId, "LastGenOutput", Path.GetFileName( szOutputFilePath ) );
+					VsBuildPropertyStorage.SetItemAttribute( nItemId, "LastGenOutput", Path.GetFileName( szOutputFilePath ) );
 
-					oVsBuildPropertyStorage.SetItemAttribute( nMinItemId, "AutoGen", "True" );
-					oVsBuildPropertyStorage.SetItemAttribute( nMinItemId, "DesignTime", "True" );
-					oVsBuildPropertyStorage.SetItemAttribute( nMinItemId, "DependentUpon", Path.GetFileName( InputFilePath ) );
+					VsBuildPropertyStorage.SetItemAttribute( nMinItemId, "AutoGen", "True" );
+					VsBuildPropertyStorage.SetItemAttribute( nMinItemId, "DesignTime", "True" );
+					VsBuildPropertyStorage.SetItemAttribute( nMinItemId, "DependentUpon", Path.GetFileName( InputFilePath ) );
 
 					//////////////////////
 					switch ( OptionPage.CompileTargetType )
@@ -322,15 +456,15 @@ namespace VSMinifier
 					//////////////////////
 
 					Application.Windows.Item( EnvDTE.Constants.vsWindowKindSolutionExplorer ).Activate( );
-					Application.ToolWindows.SolutionExplorer.GetItem( string.Format( "{0}\\{1}", Path.GetFileNameWithoutExtension( Application.Solution.FullName ), oName.EvaluatedValue ) ).Select( vsUISelectionType.vsUISelectionTypeSelect );
+					Application.ToolWindows.SolutionExplorer.GetItem( string.Format( "{0}\\{1}", Path.GetFileNameWithoutExtension( Application.Solution.FullName ), ProjectName.EvaluatedValue ) ).Select( vsUISelectionType.vsUISelectionTypeSelect );
 
-					oBuildProject.Save( );
+					BuildProject.Save( );
 
 					Application.ExecuteCommand( "Project.UnloadProject" );
 					Application.ExecuteCommand( "Project.ReloadProject" );
 
 					Application.Windows.Item( EnvDTE.Constants.vsWindowKindSolutionExplorer ).Activate( );
-					Application.ToolWindows.SolutionExplorer.GetItem( string.Format( "{0}\\{1}\\{2}", Path.GetFileNameWithoutExtension( Application.Solution.FullName ), oName.EvaluatedValue, oItem.EvaluatedInclude ) ).Select( vsUISelectionType.vsUISelectionTypeSelect );
+					Application.ToolWindows.SolutionExplorer.GetItem( string.Format( "{0}\\{1}\\{2}", Path.GetFileNameWithoutExtension( Application.Solution.FullName ), ProjectName.EvaluatedValue, oItem.EvaluatedInclude ) ).Select( vsUISelectionType.vsUISelectionTypeSelect );
 				}
 				else
 				{
