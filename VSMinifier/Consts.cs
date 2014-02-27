@@ -3,6 +3,8 @@ namespace VSMinifier
 {
 	public class Consts
 	{
+		public const string Me = "VSMinifier";
+
 		public const string GUID = "4CC31BE6-1F86-416C-962F-2DBAA8B5F1B4";
 
 		public static readonly Guid MenuGUID = new Guid( "E6315A3D-320F-4B5E-B626-63D1FB730B94" );

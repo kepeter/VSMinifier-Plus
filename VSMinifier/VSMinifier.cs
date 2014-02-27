@@ -17,14 +17,16 @@ using Yahoo.Yui.Compressor;
 namespace VSMinifier
 {
 	[Guid( Consts.GUID )]
-	[CodeGeneratorRegistration( typeof( VSMinifier ), "VSMinifier", vsContextGuids.vsContextGuidVCSProject )]
-	[CodeGeneratorRegistration( typeof( VSMinifier ), "VSMinifier", vsContextGuids.vsContextGuidVBProject )]
+	[CodeGeneratorRegistration( typeof( VSMinifier ), Consts.Me, vsContextGuids.vsContextGuidVCSProject )]
+	[CodeGeneratorRegistration( typeof( VSMinifier ), Consts.Me, vsContextGuids.vsContextGuidVBProject )]
 	[ProvideObject( typeof( VSMinifier ) )]
-	[ProvideOptionPage( typeof( OptionPage ), "Custom Tools", "VSMinifier", 0, 0, true )]
+	[ProvideOptionPage( typeof( OptionPage ), "Custom Tools", Consts.Me, 0, 0, true )]
 	[ProvideMenuResource( "VSCT", 1 )]
 	[InstalledProductRegistration( "#4001", "#4002", "1.13.1", IconResourceID = 4000 )]
 	public sealed class VSMinifier : Package, IVsSingleFileGenerator
 	{
+		#region Properties
+
 		private string _Ext;
 
 		#region Application
@@ -177,24 +179,6 @@ namespace VSMinifier
 
 		#endregion
 
-		#region Helpers
-
-		private Microsoft.Build.Evaluation.ProjectItem GetProjectItem ( string ItemPath )
-		{
-			return ( BuildProject.ItemsIgnoringCondition.Where( item => item.EvaluatedInclude.EndsWith( Path.GetFileName( ItemPath ) ) ).Single( ) );
-		}
-
-		private uint GetProjectItemId ( string ItemPath )
-		{
-			uint nID;
-
-			VsHierarchy.ParseCanonicalName( ItemPath, out nID );
-
-			return ( nID );
-		}
-
-		#endregion
-
 		#region OptionPage
 
 		private OptionPage _OptionPage;
@@ -207,7 +191,7 @@ namespace VSMinifier
 				{
 					_OptionPage = new OptionPage( );
 					PropertyInfo[ ] oPropertyInfoArray = _OptionPage.GetType( ).GetProperties( );
-					Properties oProperties = Application.get_Properties( "Custom Tools", "VSMinifier" );
+					Properties oProperties = Application.get_Properties( "Custom Tools", Consts.Me );
 
 					foreach ( PropertyInfo oPropertyInfo in oPropertyInfoArray )
 					{
@@ -224,46 +208,22 @@ namespace VSMinifier
 
 		#endregion
 
-		protected override void Initialize ( )
+		#endregion
+
+		#region Helpers
+
+		private Microsoft.Build.Evaluation.ProjectItem GetProjectItem ( string ItemPath )
 		{
-			base.Initialize( );
-
-			OleMenuCommandService oOleMenuCommandService = ( OleMenuCommandService )GetService( typeof( IMenuCommandService ) );
-
-			if ( oOleMenuCommandService != null )
-			{
-				CommandID oCommandID = new CommandID( Consts.MenuGUID, ( int )Consts.CompileTargetCommand );
-				CommandID oCommandListID = new CommandID( Consts.MenuGUID, ( int )Consts.CompileTargetCommandList );
-
-				OleMenuCommand oCommand = new OleMenuCommand( CommandInvoke, oCommandID );
-				OleMenuCommand oCommandList = new OleMenuCommand( CommandListInvoke, oCommandListID );
-
-				oCommand.BeforeQueryStatus += CommandQueryStatus;
-
-				oOleMenuCommandService.AddCommand( oCommand );
-				oOleMenuCommandService.AddCommand( oCommandList );
-			}
+			return ( BuildProject.ItemsIgnoringCondition.Where( item => item.EvaluatedInclude.EndsWith( Path.GetFileName( ItemPath ) ) ).Single( ) );
 		}
 
-		private void CommandInvoke ( object sender, EventArgs e )
+		private uint GetProjectItemId ( string ItemPath )
 		{
-		}
+			uint nID;
 
-		private void CommandListInvoke ( object sender, EventArgs e )
-		{
-			OleMenuCmdEventArgs oOleMenuCmdEventArgs = ( OleMenuCmdEventArgs )e;
+			VsHierarchy.ParseCanonicalName( ItemPath, out nID );
 
-			if ( oOleMenuCmdEventArgs.OutValue != IntPtr.Zero )
-			{
-				Marshal.GetNativeVariantForObject( new string[ ] { "Default", "Debug", "Release" }, oOleMenuCmdEventArgs.OutValue );
-			}
-		}
-
-		private void CommandQueryStatus ( object sender, EventArgs e )
-		{
-			OleMenuCommand oCommand = ( OleMenuCommand )sender;
-
-			oCommand.Visible = true;
+			return ( nID );
 		}
 
 		private byte[ ] GenerateCode ( string InputFileContent, string InputFilePath, IVsGeneratorProgress GenerateProgress )
@@ -379,6 +339,122 @@ namespace VSMinifier
 			return ( _Ext );
 		}
 
+		#endregion
+
+		#region Package Members
+
+		protected override void Initialize ( )
+		{
+			base.Initialize( );
+
+			OleMenuCommandService oOleMenuCommandService = ( OleMenuCommandService )GetService( typeof( IMenuCommandService ) );
+
+			if ( oOleMenuCommandService != null )
+			{
+				CommandID oCommandID = new CommandID( Consts.MenuGUID, ( int )Consts.CompileTargetCommand );
+				CommandID oCommandListID = new CommandID( Consts.MenuGUID, ( int )Consts.CompileTargetCommandList );
+
+				OleMenuCommand oCommand = new OleMenuCommand( CommandInvoke, oCommandID );
+				OleMenuCommand oCommandList = new OleMenuCommand( CommandListInvoke, oCommandListID );
+
+				oCommand.BeforeQueryStatus += CommandQueryStatus;
+
+				oOleMenuCommandService.AddCommand( oCommand );
+				oOleMenuCommandService.AddCommand( oCommandList );
+			}
+		}
+
+		#endregion
+
+		#region Event Handlers
+
+		private void CommandInvoke ( object sender, EventArgs e )
+		{
+			OleMenuCmdEventArgs oOleMenuCmdEventArgs = ( OleMenuCmdEventArgs )e;
+			Microsoft.Build.Evaluation.ProjectItem oItem = GetProjectItem( ProjectItem.Name );
+
+			if ( oOleMenuCmdEventArgs.OutValue != IntPtr.Zero )
+			{
+				string szOut = string.IsNullOrEmpty( oItem.Xml.Condition ) ? "Default" : oItem.Xml.Condition.Replace( "'$(Configuration)' ==", string.Empty ).Replace( "'", string.Empty ).Trim( );
+
+				Marshal.GetNativeVariantForObject( szOut, oOleMenuCmdEventArgs.OutValue );
+			}
+			else if ( oOleMenuCmdEventArgs.InValue != null )
+			{
+				switch ( Convert.ToString( oOleMenuCmdEventArgs.InValue ) )
+				{
+					case "Default":
+					{
+						oItem.Xml.Condition = string.Empty;
+					}
+					break;
+
+					case "Debug":
+					{
+						oItem.Xml.Condition = " '$(Configuration)' == 'Debug' ";
+					}
+					break;
+
+					case "Release":
+					{
+						oItem.Xml.Condition = " '$(Configuration)' == 'Release' ";
+					}
+					break;
+				}
+			}
+		}
+
+		private void CommandListInvoke ( object sender, EventArgs e )
+		{
+			OleMenuCmdEventArgs oOleMenuCmdEventArgs = ( OleMenuCmdEventArgs )e;
+
+			if ( oOleMenuCmdEventArgs.OutValue != IntPtr.Zero )
+			{
+				Marshal.GetNativeVariantForObject( new string[ ] { "Default", "Debug", "Release" }, oOleMenuCmdEventArgs.OutValue );
+			}
+		}
+
+		private void CommandQueryStatus ( object sender, EventArgs e )
+		{
+			OleMenuCommand oCommand = ( OleMenuCommand )sender;
+			Microsoft.Build.Evaluation.ProjectItem oItem = GetProjectItem( ProjectItem.Name );
+			Microsoft.Build.Evaluation.ProjectMetadata oMetadata = oItem.Metadata.SingleOrDefault( oProperty => oProperty.Name == "Generator" );
+			bool bFit = false;
+
+			if ( oMetadata != null )
+			{
+				string szTool = oMetadata.EvaluatedValue;
+
+				if ( szTool.ToUpper( ) == Consts.Me.ToUpper( ) )
+				{
+					bFit = true;
+				}
+			}
+
+			if ( !bFit )
+			{
+				oMetadata = oItem.Metadata.SingleOrDefault( oProperty => oProperty.Name == "DependentUpon" );
+
+				if ( oMetadata != null )
+				{
+					oItem = GetProjectItem( oMetadata.EvaluatedValue );
+
+					oMetadata = oItem.Metadata.SingleOrDefault( oProperty => oProperty.Name == "Generator" );
+
+					string szTool = oMetadata.EvaluatedValue;
+
+					if ( szTool.ToUpper( ) == Consts.Me.ToUpper( ) )
+					{
+						bFit = true;
+					}
+				}
+			}
+
+			oCommand.Visible = bFit;
+		}
+
+		#endregion
+
 		#region IVsSingleFileGenerator Members
 
 		int IVsSingleFileGenerator.DefaultExtension ( out string DefaultExtension )
@@ -418,7 +494,6 @@ namespace VSMinifier
 					VsBuildPropertyStorage.SetItemAttribute( nMinItemId, "DesignTime", "True" );
 					VsBuildPropertyStorage.SetItemAttribute( nMinItemId, "DependentUpon", Path.GetFileName( InputFilePath ) );
 
-					//////////////////////
 					switch ( OptionPage.CompileTargetType )
 					{
 						case CompileTargetType.Default:
