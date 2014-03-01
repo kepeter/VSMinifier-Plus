@@ -79,6 +79,8 @@
 			this.label7 = new System.Windows.Forms.Label();
 			this.CSSExt = new System.Windows.Forms.TextBox();
 			this.label8 = new System.Windows.Forms.Label();
+			this.tabPage1 = new System.Windows.Forms.TabPage();
+			this.Help = new System.Windows.Forms.RichTextBox();
 			this.TabControl.SuspendLayout();
 			this.CommonTab.SuspendLayout();
 			this.CTGroup.SuspendLayout();
@@ -90,6 +92,7 @@
 			this.CSSTab.SuspendLayout();
 			this.CSSYUI.SuspendLayout();
 			this.CSSMsMinifier.SuspendLayout();
+			this.tabPage1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// TabControl
@@ -97,6 +100,7 @@
 			this.TabControl.Controls.Add(this.CommonTab);
 			this.TabControl.Controls.Add(this.JSTab);
 			this.TabControl.Controls.Add(this.CSSTab);
+			this.TabControl.Controls.Add(this.tabPage1);
 			this.TabControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.TabControl.Location = new System.Drawing.Point(0, 0);
 			this.TabControl.Name = "TabControl";
@@ -698,6 +702,24 @@
 			this.label8.TabIndex = 7;
 			this.label8.Text = "Extension for minified file:";
 			// 
+			// tabPage1
+			// 
+			this.tabPage1.Controls.Add(this.Help);
+			this.tabPage1.Location = new System.Drawing.Point(4, 22);
+			this.tabPage1.Name = "tabPage1";
+			this.tabPage1.Size = new System.Drawing.Size(667, 624);
+			this.tabPage1.TabIndex = 3;
+			this.tabPage1.Text = "Help";
+			this.tabPage1.UseVisualStyleBackColor = true;
+			// 
+			// Help
+			// 
+			this.Help.Location = new System.Drawing.Point(3, 3);
+			this.Help.Name = "Help";
+			this.Help.Size = new System.Drawing.Size(661, 618);
+			this.Help.TabIndex = 0;
+			this.Help.Text = "";
+			// 
 			// OptionControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -726,6 +748,7 @@
 			this.CSSYUI.PerformLayout();
 			this.CSSMsMinifier.ResumeLayout(false);
 			this.CSSMsMinifier.PerformLayout();
+			this.tabPage1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -783,5 +806,7 @@
 		private System.Windows.Forms.CheckBox CTManual;
 		private System.Windows.Forms.RadioButton CTMixed;
 		private System.Windows.Forms.RadioButton CTDefault;
+		private System.Windows.Forms.TabPage tabPage1;
+		private System.Windows.Forms.RichTextBox Help;
 	}
 }
