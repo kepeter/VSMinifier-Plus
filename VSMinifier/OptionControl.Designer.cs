@@ -719,12 +719,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.HelpText.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.HelpText.Cursor = System.Windows.Forms.Cursors.Default;
+			this.HelpText.DetectUrls = false;
 			this.HelpText.Location = new System.Drawing.Point(3, 3);
 			this.HelpText.Name = "HelpText";
 			this.HelpText.ReadOnly = true;
 			this.HelpText.Size = new System.Drawing.Size(661, 618);
 			this.HelpText.TabIndex = 0;
 			this.HelpText.Text = "";
+			this.HelpText.WordWrap = false;
 			// 
 			// OptionControl
 			// 
