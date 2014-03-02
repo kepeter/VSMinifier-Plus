@@ -86,9 +86,9 @@ namespace VSMinifier
 
 			// Help
 			Assembly oAssembly = Assembly.GetExecutingAssembly( );
-			Stream oStream = oAssembly.GetManifestResourceStream( "VSMinifer.Help.rtf" );
+			Stream oStream = oAssembly.GetManifestResourceStream( "VSMinifier.Resources.Help.rtf" );
 
-			Help.LoadFile( oStream, RichTextBoxStreamType.RichText );
+			HelpText.LoadFile( oStream, RichTextBoxStreamType.RichText );
 		}
 
 		private void Tab_Resize ( object sender, EventArgs e )

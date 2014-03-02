@@ -80,7 +80,7 @@
 			this.CSSExt = new System.Windows.Forms.TextBox();
 			this.label8 = new System.Windows.Forms.Label();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
-			this.Help = new System.Windows.Forms.RichTextBox();
+			this.HelpText = new System.Windows.Forms.RichTextBox();
 			this.TabControl.SuspendLayout();
 			this.CommonTab.SuspendLayout();
 			this.CTGroup.SuspendLayout();
@@ -704,7 +704,7 @@
 			// 
 			// tabPage1
 			// 
-			this.tabPage1.Controls.Add(this.Help);
+			this.tabPage1.Controls.Add(this.HelpText);
 			this.tabPage1.Location = new System.Drawing.Point(4, 22);
 			this.tabPage1.Name = "tabPage1";
 			this.tabPage1.Size = new System.Drawing.Size(667, 624);
@@ -712,13 +712,19 @@
 			this.tabPage1.Text = "Help";
 			this.tabPage1.UseVisualStyleBackColor = true;
 			// 
-			// Help
+			// HelpText
 			// 
-			this.Help.Location = new System.Drawing.Point(3, 3);
-			this.Help.Name = "Help";
-			this.Help.Size = new System.Drawing.Size(661, 618);
-			this.Help.TabIndex = 0;
-			this.Help.Text = "";
+			this.HelpText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.HelpText.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.HelpText.Cursor = System.Windows.Forms.Cursors.Default;
+			this.HelpText.Location = new System.Drawing.Point(3, 3);
+			this.HelpText.Name = "HelpText";
+			this.HelpText.ReadOnly = true;
+			this.HelpText.Size = new System.Drawing.Size(661, 618);
+			this.HelpText.TabIndex = 0;
+			this.HelpText.Text = "";
 			// 
 			// OptionControl
 			// 
@@ -807,6 +813,6 @@
 		private System.Windows.Forms.RadioButton CTMixed;
 		private System.Windows.Forms.RadioButton CTDefault;
 		private System.Windows.Forms.TabPage tabPage1;
-		private System.Windows.Forms.RichTextBox Help;
+		private System.Windows.Forms.RichTextBox HelpText;
 	}
 }
