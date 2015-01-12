@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
@@ -230,6 +231,9 @@ namespace VSMinifier
 		{
 			bool bDo = false;
 			string OutputFileContent = InputFileContent;
+			string[ ] szFiles;
+			string szInputContent = string.Empty;
+			string szOutputContent = string.Empty;
 
 			_Ext = Path.GetExtension( InputFilePath );
 
@@ -247,81 +251,109 @@ namespace VSMinifier
 
 			if ( bDo )
 			{
-				if ( _Ext == OptionPage.JSExt )
+				if ( InputFileContent.StartsWith( "// FILE LIST" ) )
 				{
-					switch ( OptionPage.JSEngine )
-					{
-						case JSEngineType.MicrosoftAjaxMinifier:
-						{
-							Minifier oMinifier = new Minifier( );
-							CodeSettings oSettings = new CodeSettings( );
-
-							oSettings.LocalRenaming = OptionPage.JSMsLocalRename;
-							oSettings.OutputMode = OptionPage.JSMsOutputMode;
-							oSettings.PreserveImportantComments = OptionPage.JSMsPreserveImportantComments;
-							oSettings.RemoveUnneededCode = OptionPage.JSMsRemoveUnneededCode;
-							oSettings.PreserveFunctionNames = OptionPage.JSMsPreserveFunctionNames;
-							oSettings.RemoveFunctionExpressionNames = OptionPage.JSMsRemoveFunctionExpressionNames;
-
-							OutputFileContent = oMinifier.MinifyJavaScript( InputFileContent, oSettings );
-						}
-						break;
-
-						case JSEngineType.GoogleClosureCompiler:
-						{
-							GoogleClosure oCompiler = new GoogleClosure( );
-
-							OutputFileContent = oCompiler.Compress( InputFileContent, OptionPage.JSGCompilationLevel );
-						}
-						break;
-
-						case JSEngineType.YUICompressor:
-						{
-							JavaScriptCompressor oCompressor = new JavaScriptCompressor( );
-
-							oCompressor.CompressionType = CompressionType.Standard;
-
-							oCompressor.DisableOptimizations = OptionPage.JSYDisableOptimizations;
-							oCompressor.PreserveAllSemicolons = OptionPage.JSYPreserveAllSemicolons;
-							oCompressor.ObfuscateJavascript = OptionPage.JSYObfuscateJavascript;
-
-							OutputFileContent = oCompressor.Compress( InputFileContent );
-						}
-						break;
-					}
+					szFiles = GetFileList( InputFileContent );
+				}
+				else
+				{
+					szFiles = new string[ ] { string.Empty };
 				}
 
-				if ( _Ext == OptionPage.CSSExt )
+				foreach ( string szFile in szFiles )
 				{
-					switch ( OptionPage.CSSEngine )
+					if ( szFile == string.Empty )
 					{
-						case CSSEngineType.MicrosoftAjaxMinifier:
-						{
-							Minifier oMinifier = new Minifier( );
-							CssSettings oSettings = new CssSettings( );
-
-							oSettings.ColorNames = OptionPage.CSSMsColorNames;
-							oSettings.CommentMode = OptionPage.CSSMsCommentMode;
-							oSettings.CssType = OptionPage.CSSMsCssType;
-							oSettings.MinifyExpressions = OptionPage.CSSMsMinifyExpressions;
-							oSettings.OutputMode = OptionPage.CSSMsOutputMode;
-
-							OutputFileContent = oMinifier.MinifyStyleSheet( InputFileContent, oSettings );
-						}
-						break;
-
-						case CSSEngineType.YUICompressor:
-						{
-							CssCompressor oCompressor = new CssCompressor( );
-
-							oCompressor.CompressionType = CompressionType.Standard;
-
-							oCompressor.RemoveComments = OptionPage.CSSYRemoveComments;
-
-							OutputFileContent = oCompressor.Compress( InputFileContent );
-						}
-						break;
+						szInputContent = InputFileContent;
 					}
+					else
+					{
+						string szPath = Path.Combine( Path.GetDirectoryName( InputFilePath ), szFile.Replace( "//", string.Empty ).Trim( ) );
+
+						szInputContent = File.ReadAllText( szPath );
+					}
+
+					if ( _Ext == OptionPage.JSExt )
+					{
+						switch ( OptionPage.JSEngine )
+						{
+							case JSEngineType.MicrosoftAjaxMinifier:
+							{
+								Minifier oMinifier = new Minifier( );
+								CodeSettings oSettings = new CodeSettings( );
+
+								oSettings.LocalRenaming = OptionPage.JSMsLocalRename;
+								oSettings.OutputMode = OptionPage.JSMsOutputMode;
+								oSettings.PreserveImportantComments = OptionPage.JSMsPreserveImportantComments;
+								oSettings.RemoveUnneededCode = OptionPage.JSMsRemoveUnneededCode;
+								oSettings.PreserveFunctionNames = OptionPage.JSMsPreserveFunctionNames;
+								oSettings.RemoveFunctionExpressionNames = OptionPage.JSMsRemoveFunctionExpressionNames;
+
+								szOutputContent += oMinifier.MinifyJavaScript( szInputContent, oSettings );
+							}
+							break;
+
+							case JSEngineType.GoogleClosureCompiler:
+							{
+								GoogleClosure oCompiler = new GoogleClosure( );
+
+								szOutputContent += oCompiler.Compress( szInputContent, OptionPage.JSGCompilationLevel );
+							}
+							break;
+
+							case JSEngineType.YUICompressor:
+							{
+								JavaScriptCompressor oCompressor = new JavaScriptCompressor( );
+
+								oCompressor.CompressionType = CompressionType.Standard;
+
+								oCompressor.DisableOptimizations = OptionPage.JSYDisableOptimizations;
+								oCompressor.PreserveAllSemicolons = OptionPage.JSYPreserveAllSemicolons;
+								oCompressor.ObfuscateJavascript = OptionPage.JSYObfuscateJavascript;
+
+								szOutputContent += oCompressor.Compress( szInputContent );
+							}
+							break;
+						}
+					}
+
+					if ( _Ext == OptionPage.CSSExt )
+					{
+						switch ( OptionPage.CSSEngine )
+						{
+							case CSSEngineType.MicrosoftAjaxMinifier:
+							{
+								Minifier oMinifier = new Minifier( );
+								CssSettings oSettings = new CssSettings( );
+
+								oSettings.ColorNames = OptionPage.CSSMsColorNames;
+								oSettings.CommentMode = OptionPage.CSSMsCommentMode;
+								oSettings.CssType = OptionPage.CSSMsCssType;
+								oSettings.MinifyExpressions = OptionPage.CSSMsMinifyExpressions;
+								oSettings.OutputMode = OptionPage.CSSMsOutputMode;
+
+								szOutputContent += oMinifier.MinifyStyleSheet( szInputContent, oSettings );
+							}
+							break;
+
+							case CSSEngineType.YUICompressor:
+							{
+								CssCompressor oCompressor = new CssCompressor( );
+
+								oCompressor.CompressionType = CompressionType.Standard;
+
+								oCompressor.RemoveComments = OptionPage.CSSYRemoveComments;
+
+								szOutputContent += oCompressor.Compress( szInputContent );
+							}
+							break;
+						}
+					}
+
+
+					szOutputContent += Environment.NewLine;
+
+					OutputFileContent = szOutputContent;
 				}
 
 				return ( Encoding.UTF8.GetBytes( OutputFileContent ) );
@@ -337,6 +369,15 @@ namespace VSMinifier
 		private string GetDefaultExtension ( )
 		{
 			return ( _Ext );
+		}
+
+		private string[ ] GetFileList ( string InputFileContent )
+		{
+			List<string> szFileList = new List<string>( InputFileContent.Split( new string[ ] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries ) );
+
+			szFileList.RemoveAt( 0 );
+
+			return ( szFileList.ToArray( ) );
 		}
 
 		#endregion
